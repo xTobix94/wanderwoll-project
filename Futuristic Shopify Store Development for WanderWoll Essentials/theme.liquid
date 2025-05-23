@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="{{ shop.locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#2E8B57">
+
+  <title>{{ page_title }}{% if page_title contains shop.name %}{% else %} - {{ shop.name }}{% endif %}</title>
+  
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ 'favicon.png' | asset_url }}">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Theme CSS -->
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+
+  <!-- Theme JavaScript -->
+  {{ 'theme.js' | asset_url | defer }}
+
+  <!-- Three.js for 3D Models -->
+  {{ 'three.min.js' | asset_url | defer }}
+  {{ '3d-viewer.js' | asset_url | defer }}
+
+  <!-- Shopify Required -->
+  {{ content_for_header }}
+  
+  <style>
+    :root {
+      --color-primary: #2E8B57;
+      --color-secondary: #F5DEB3;
+      --color-accent: #000000;
+      --font-heading: 'Montserrat', sans-serif;
+      --font-body: 'Open Sans', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="template-{{ template | split: '.' | first }}">
+  <!-- DSGVO-compliant cookie banner -->
+  {% render 'cookie-banner' %}
+
+  <!-- Header -->
+  {% section 'header' %}
+
+  <!-- Main content -->
+  <main role="main" id="MainContent">
+    {{ content_for_layout }}
+  </main>
+
+  <!-- Footer -->
+  {% section 'footer' %}
+
+  <!-- Shopify Scripts -->
+  {% render 'shopify-scripts' %}
+</body>
+</html>

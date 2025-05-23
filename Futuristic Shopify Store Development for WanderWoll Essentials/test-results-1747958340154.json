@@ -1,0 +1,152 @@
+{
+  "timestamp": "2025-05-22T23:58:51.433Z",
+  "tests": {
+    "healthCheck": {
+      "success": true,
+      "health": {
+        "orchestrator": {
+          "status": "healthy",
+          "timestamp": "2025-05-22T23:58:51.435Z"
+        },
+        "connectors": {
+          "virtualthreads": {
+            "status": "healthy",
+            "timestamp": "2025-05-22T23:58:51.435Z"
+          },
+          "mockey": {
+            "status": "healthy",
+            "timestamp": "2025-05-22T23:58:51.435Z"
+          },
+          "cgtrader": {
+            "status": "healthy",
+            "timestamp": "2025-05-22T23:58:51.435Z"
+          },
+          "blender": {
+            "status": "healthy",
+            "timestamp": "2025-05-22T23:58:51.435Z"
+          },
+          "shopify": {
+            "status": "healthy",
+            "timestamp": "2025-05-22T23:58:51.435Z"
+          }
+        }
+      },
+      "message": "All connectors are healthy"
+    },
+    "fallbackMechanisms": {
+      "success": true,
+      "result": {
+        "success": true,
+        "mockupUrl": "https://cdn.mockey.ai/mockups/tshirt_forest-green.png",
+        "productType": "tshirt",
+        "colorVariant": "forest-green",
+        "usedFallback": true
+      },
+      "message": "Fallback mechanism worked correctly"
+    },
+    "designUpload": {
+      "success": false,
+      "error": "uniqueDesignFile is not defined"
+    },
+    "modelProcessing": {
+      "success": true,
+      "result": {
+        "success": true,
+        "inputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt.glb",
+        "outputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt_processed_forest-green.glb",
+        "colorVariant": "forest-green",
+        "mode": "convert"
+      }
+    },
+    "productMockups": {
+      "success": true,
+      "result": {
+        "forest-green": {
+          "success": true,
+          "mockupId": "vt-mockup-1747958333942",
+          "mockupUrl": "https://cdn.virtualthreads.io/mockups/tshirt_forest-green.png",
+          "productType": "tshirt",
+          "colorVariant": "forest-green"
+        },
+        "beige": {
+          "success": true,
+          "mockupId": "vt-mockup-1747958334443",
+          "mockupUrl": "https://cdn.virtualthreads.io/mockups/tshirt_beige.png",
+          "productType": "tshirt",
+          "colorVariant": "beige"
+        },
+        "black": {
+          "success": true,
+          "mockupId": "vt-mockup-1747958334944",
+          "mockupUrl": "https://cdn.virtualthreads.io/mockups/tshirt_black.png",
+          "productType": "tshirt",
+          "colorVariant": "black"
+        }
+      },
+      "message": "All variants generated successfully"
+    },
+    "shopifyIntegration": {
+      "success": true,
+      "result": {
+        "success": true,
+        "productType": "tshirt",
+        "models": {
+          "forest-green": {
+            "success": true,
+            "inputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt.glb",
+            "outputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt_processed_forest-green.glb",
+            "colorVariant": "forest-green",
+            "mode": "convert"
+          },
+          "beige": {
+            "success": true,
+            "inputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt.glb",
+            "outputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt_processed_beige.glb",
+            "colorVariant": "beige",
+            "mode": "convert"
+          },
+          "black": {
+            "success": true,
+            "inputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt.glb",
+            "outputFile": "/home/ubuntu/wanderwoll-project/external-integrations/cgtrader-assets/models/tshirt_processed_black.glb",
+            "colorVariant": "black",
+            "mode": "convert"
+          }
+        },
+        "mockups": {
+          "forest-green": {
+            "success": true,
+            "mockupUrl": "https://cdn.mockey.ai/mockups/tshirt_forest-green.png",
+            "productType": "tshirt",
+            "colorVariant": "forest-green"
+          },
+          "beige": {
+            "success": true,
+            "mockupUrl": "https://cdn.mockey.ai/mockups/tshirt_beige.png",
+            "productType": "tshirt",
+            "colorVariant": "beige"
+          },
+          "black": {
+            "success": true,
+            "mockupUrl": "https://cdn.mockey.ai/mockups/tshirt_black.png",
+            "productType": "tshirt",
+            "colorVariant": "black"
+          }
+        }
+      }
+    },
+    "caching": {
+      "success": true,
+      "firstCallDuration": 501,
+      "secondCallDuration": 1,
+      "speedup": "100%",
+      "message": "Caching is working correctly"
+    }
+  },
+  "summary": {
+    "totalTests": 7,
+    "passedTests": 6,
+    "success": false,
+    "successRate": "86%"
+  }
+}

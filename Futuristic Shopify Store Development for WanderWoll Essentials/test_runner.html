@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderWoll essentials - AR Test Runner</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2E8B57;
+            margin-top: 0;
+        }
+        
+        .test-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        button {
+            background-color: #2E8B57;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #236e44;
+        }
+        
+        .test-results {
+            margin-top: 20px;
+        }
+        
+        .test-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .test-summary h2 {
+            margin-top: 0;
+            color: #2E8B57;
+        }
+        
+        .test-details {
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+        }
+        
+        .passed {
+            color: #2E8B57;
+        }
+        
+        .failed {
+            color: #e74c3c;
+        }
+        
+        .skipped {
+            color: #f39c12;
+        }
+        
+        .test-environment {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .test-environment h2 {
+            margin-top: 0;
+            color: #2E8B57;
+        }
+        
+        pre {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WanderWoll essentials - AR Integration Test Runner</h1>
+        
+        <div class="test-controls">
+            <h2>Test Controls</h2>
+            <button id="run-all-tests">Run All Tests</button>
+            <button id="run-module-tests">Test Module Initialization</button>
+            <button id="run-viewer-tests">Test Viewer Component</button>
+            <button id="run-session-tests">Test AR Session</button>
+            <button id="run-shopify-tests">Test Shopify Integration</button>
+            <button id="run-performance-tests">Test Performance</button>
+            <button id="run-error-tests">Test Error Handling</button>
+        </div>
+        
+        <div class="test-environment">
+            <h2>Test Environment</h2>
+            <div id="environment-details"></div>
+        </div>
+        
+        <div class="test-results">
+            <div class="test-summary">
+                <h2>Test Summary</h2>
+                <div id="summary-details"></div>
+            </div>
+            
+            <div class="test-details">
+                <h2>Test Details</h2>
+                <table id="test-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Description</th>
+                            <th>Result</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody id="test-results">
+                        <tr>
+                            <td colspan="4">No tests run yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load AR integration scripts -->
+    <script src="/ar-integration/ar_integration_module.js"></script>
+    <script src="/ar-integration/ar_viewer_component.js"></script>
+    <script src="/ar-integration/shopify_integration.js"></script>
+    <script src="/ar-integration/ar_integration_tests.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tests
+            const tests = new ARIntegrationTests();
+            
+            // Display environment details
+            const environmentDetails = document.getElementById('environment-details');
+            environmentDetails.innerHTML = `
+                <p><strong>Browser:</strong> ${tests.testEnvironment.browser.name} ${tests.testEnvironment.browser.version}</p>
+                <p><strong>Device:</strong> ${tests.testEnvironment.device.type} (${tests.testEnvironment.device.os})</p>
+                <p><strong>WebGL Support:</strong> ${tests.testEnvironment.webglSupported ? 'Yes' : 'No'}</p>
+                <p><strong>WebXR Support:</strong> ${tests.testEnvironment.webxrSupported ? 'Yes' : 'No'}</p>
+                <p><strong>Camera Support:</strong> ${tests.testEnvironment.cameraSupported ? 'Yes' : 'No'}</p>
+            `;
+            
+            // Set up button event listeners
+            document.getElementById('run-all-tests').addEventListener('click', async () => {
+                await runTests(() => tests.runAllTests());
+            });
+            
+            document.getElementById('run-module-tests').addEventListener('click', async () => {
+                await runTests(() => tests.testModuleInitialization());
+            });
+            
+            document.getElementById('run-viewer-tests').addEventListener('click', async () => {
+                await runTests(() => tests.testViewerComponent());
+            });
+            
+            document.getElementById('run-session-tests').addEventListener('click', async () => {
+                await runTests(() => tests.testARSession());
+            });
+            
+            document.getElementById('run-shopify-tests').addEventListener('click', async () => {
+                await runTests(() => tests.testShopifyIntegration());
+            });
+            
+            document.getElementById('run-performance-tests').addEventListener('click', async () => {
+                await runTests(() => tests.testPerformance());
+            });
+            
+            document.getElementById('run-error-tests').addEventListener('click', async () => {
+                await runTests(() => tests.testErrorHandling());
+            });
+            
+            // Function to run tests and update UI
+            async function runTests(testFn) {
+                // Clear previous results
+                tests.testResults = {
+                    passed: 0,
+                    failed: 0,
+                    skipped: 0,
+                    total: 0,
+                    tests: []
+                };
+                
+                // Update UI to show tests are running
+                document.getElementById('summary-details').innerHTML = '<p>Running tests...</p>';
+                document.getElementById('test-results').innerHTML = '<tr><td colspan="4">Running tests...</td></tr>';
+                
+                // Run tests
+                await testFn();
+                
+                // Update summary
+                const summaryDetails = document.getElementById('summary-details');
+                summaryDetails.innerHTML = `
+                    <p><strong>Total tests:</strong> ${tests.testResults.total}</p>
+                    <p><strong>Passed:</strong> <span class="passed">${tests.testResults.passed}</span></p>
+                    <p><strong>Failed:</strong> <span class="failed">${tests.testResults.failed}</span></p>
+                    <p><strong>Skipped:</strong> <span class="skipped">${tests.testResults.skipped}</span></p>
+                `;
+                
+                // Update test details
+                const testResults = document.getElementById('test-results');
+                testResults.innerHTML = '';
+                
+                if (tests.testResults.tests.length === 0) {
+                    testResults.innerHTML = '<tr><td colspan="4">No tests run</td></tr>';
+                } else {
+                    tests.testResults.tests.forEach(test => {
+                        const row = document.createElement('tr');
+                        
+                        const idCell = document.createElement('td');
+                        idCell.textContent = test.id;
+                        row.appendChild(idCell);
+                        
+                        const descriptionCell = document.createElement('td');
+                        descriptionCell.textContent = test.description;
+                        row.appendChild(descriptionCell);
+                        
+                        const resultCell = document.createElement('td');
+                        resultCell.textContent = test.result;
+                        resultCell.className = test.result;
+                        row.appendChild(resultCell);
+                        
+                        const errorCell = document.createElement('td');
+                        errorCell.textContent = test.error || '';
+                        row.appendChild(errorCell);
+                        
+                        testResults.appendChild(row);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<div class="theme-header">
+  <div class="header-container">
+    <div class="header-logo">
+      <a href="/">
+        <img src="{{ 'wanderwoll-logo.svg' | asset_url }}" alt="{{ shop.name }}" width="180" height="60">
+      </a>
+    </div>
+    
+    <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    
+    <nav class="header-nav">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="/collections/all" class="nav-link">Shop</a>
+        </li>
+        <li class="nav-item">
+          <a href="/collections/merino" class="nav-link">Merino</a>
+        </li>
+        <li class="nav-item">
+          <a href="/collections/tech" class="nav-link">Tech</a>
+        </li>
+        <li class="nav-item">
+          <a href="/pages/about" class="nav-link">Über uns</a>
+        </li>
+        <li class="nav-item">
+          <a href="/pages/sustainability" class="nav-link">Nachhaltigkeit</a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="header-actions">
+      <div class="action-item">
+        <a href="/search" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+      <div class="action-item">
+        <a href="/account" aria-label="Account">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 10C12.2091 10 14 8.20914 14 6C14 3.79086 12.2091 2 10 2C7.79086 2 6 3.79086 6 6C6 8.20914 7.79086 10 10 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 18C2 14.6863 5.58172 12 10 12C14.4183 12 18 14.6863 18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+      <div class="action-item">
+        <a href="/cart" aria-label="Cart">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 2H19L17 10H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 2L3 0H0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 10V14H17V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="7" cy="17" r="1" fill="currentColor"/>
+            <circle cx="15" cy="17" r="1" fill="currentColor"/>
+          </svg>
+          {%- if cart.item_count > 0 -%}
+            <span class="cart-count">{{ cart.item_count }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navList = document.querySelector('.nav-list');
+    
+    if (mobileMenuToggle && navList) {
+      mobileMenuToggle.addEventListener('click', function() {
+        navList.classList.toggle('active');
+        const expanded = navList.classList.contains('active');
+        mobileMenuToggle.setAttribute('aria-expanded', expanded);
+      });
+    }
+  });
+</script>

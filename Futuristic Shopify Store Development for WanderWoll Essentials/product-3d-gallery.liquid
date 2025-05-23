@@ -1,0 +1,116 @@
+<div class="product-3d-gallery" id="product-3d-gallery">
+  <div class="gallery-container">
+    <div class="gallery-header">
+      <h2 class="gallery-title">{{ section.settings.title }}</h2>
+      <p class="gallery-description">{{ section.settings.description }}</p>
+    </div>
+    
+    <div class="product-grid">
+      {% for block in section.blocks %}
+        {% if block.settings.product != blank %}
+          <div class="product-card">
+            <div class="product-image-container" data-product-id="{{ block.settings.product.id }}">
+              {% if block.settings.use_3d_viewer %}
+                <div class="product-3d-badge">3D</div>
+                <div class="product-3d-container" data-model-url="{{ block.settings.3d_model_url }}"></div>
+              {% else %}
+                <img 
+                  src="{{ block.settings.product.featured_image | img_url: '600x600', crop: 'center' }}" 
+                  alt="{{ block.settings.product.title }}"
+                  class="product-image"
+                  width="600"
+                  height="600"
+                  loading="lazy"
+                >
+              {% endif %}
+            </div>
+            <div class="product-info">
+              <h3 class="product-title">{{ block.settings.product.title }}</h3>
+              <div class="product-price">{{ block.settings.product.price | money }}</div>
+              <p class="product-description">{{ block.settings.product.description | strip_html | truncatewords: 20 }}</p>
+              <a href="{{ block.settings.product.url }}" class="product-cta">{{ section.settings.button_text }}</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product 3D Gallery",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Unsere Produkte"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Entdecke unsere nachhaltigen Merino-Produkte und Tech-Essentials für digitale Nomaden."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Details ansehen"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_3d_viewer",
+          "label": "Use 3D viewer",
+          "default": false
+        },
+        {
+          "type": "url",
+          "id": "3d_model_url",
+          "label": "3D model URL",
+          "info": "URL to the 3D model file (will be implemented in Phase 1)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product 3D Gallery",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+  // Placeholder for 3D viewer initialization
+  // Will be implemented in the 3D mockup system phase
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('3D Product Gallery initialized');
+  });
+</script>

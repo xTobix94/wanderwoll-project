@@ -1,0 +1,172 @@
+{% comment %}
+  WanderWoll essentials 3D Viewer Snippet
+  
+  This snippet renders a 3D product viewer for compatible products.
+  
+  Usage:
+  {% render '3d-viewer', product: product %}
+{% endcomment %}
+
+<div 
+  id="ww-3d-viewer-{{ product.id }}" 
+  class="ww-3d-viewer" 
+  data-product-handle="{{ product.handle }}"
+  data-model-url="{{ product.metafields.wanderwoll.model_url | default: '' }}"
+  style="width: 100%; height: 400px; position: relative; background-color: #f5f5f5; border-radius: 8px; overflow: hidden;"
+>
+  <div class="ww-3d-placeholder">
+    <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 16.61V7.39C21 6.62 20.53 5.94 19.8 5.64L13.8 3.24C12.93 2.85 11.07 2.85 10.2 3.24L4.2 5.64C3.47 5.94 3 6.62 3 7.39V16.61C3 17.38 3.47 18.06 4.2 18.36L10.2 20.76C10.63 20.92 11.17 21 11.7 21C12.23 21 12.77 20.92 13.2 20.76L19.2 18.36C20.53 17.94 21 17.38 21 16.61Z" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3.27002 6.96L12 12.01L20.73 6.96" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 22.08V12" stroke="#2E8B57" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p style="margin-top: 10px; color: #2E8B57; font-family: var(--font-body, sans-serif);">3D Viewer wird geladen...</p>
+    </div>
+  </div>
+</div>
+
+{% if product.metafields.wanderwoll.has_3d_model %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if Three.js is loaded
+    if (typeof THREE === 'undefined') {
+      // Load Three.js
+      const threeScript = document.createElement('script');
+      threeScript.src = '{{ "three.min.js" | asset_url }}';
+      threeScript.onload = function() {
+        // Load OrbitControls
+        const orbitScript = document.createElement('script');
+        orbitScript.src = '{{ "OrbitControls.js" | asset_url }}';
+        orbitScript.onload = function() {
+          // Load GLTFLoader
+          const gltfScript = document.createElement('script');
+          gltfScript.src = '{{ "GLTFLoader.js" | asset_url }}';
+          gltfScript.onload = function() {
+            // Load WanderWoll viewer
+            const viewerScript = document.createElement('script');
+            viewerScript.src = '{{ "three-viewer.js" | asset_url }}';
+            viewerScript.onload = function() {
+              // Load product models
+              const modelsScript = document.createElement('script');
+              modelsScript.src = '{{ "product-models.js" | asset_url }}';
+              modelsScript.onload = function() {
+                initializeViewer();
+              };
+              document.head.appendChild(modelsScript);
+            };
+            document.head.appendChild(viewerScript);
+          };
+          document.head.appendChild(gltfScript);
+        };
+        document.head.appendChild(orbitScript);
+      };
+      document.head.appendChild(threeScript);
+    } else {
+      initializeViewer();
+    }
+    
+    function initializeViewer() {
+      const viewerId = 'ww-3d-viewer-{{ product.id }}';
+      const viewerEl = document.getElementById(viewerId);
+      
+      if (!viewerEl) return;
+      
+      const productHandle = viewerEl.dataset.productHandle;
+      const modelUrl = viewerEl.dataset.modelUrl;
+      
+      // Get product model configuration
+      let modelConfig;
+      if (typeof getProductModel === 'function') {
+        modelConfig = getProductModel(productHandle);
+      }
+      
+      // Initialize viewer with configuration
+      const viewer = new WanderWollProductViewer({
+        containerId: viewerId,
+        modelPath: modelUrl || (modelConfig ? modelConfig.modelPath : null),
+        backgroundColor: 0xf5f5f5,
+        autoRotate: true,
+        enableZoom: true,
+        cameraPosition: modelConfig ? modelConfig.cameraPosition : { x: 0, y: 0, z: 3 },
+        onLoad: function() {
+          console.log('3D model loaded successfully');
+          
+          // Add color variant selection if available
+          if (modelConfig && modelConfig.variants) {
+            addColorVariantControls(viewerId, viewer, modelConfig);
+          }
+        },
+        onError: function(error) {
+          console.error('Error loading 3D model:', error);
+          viewerEl.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#FF0000" stroke-width="2"/>
+                <path d="M15 9L9 15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                <path d="M9 9L15 15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <p style="margin-top: 10px; color: #FF0000; font-family: var(--font-body, sans-serif);">3D Modell konnte nicht geladen werden</p>
+            </div>
+          `;
+        }
+      });
+      
+      // Store viewer instance for later access
+      window.wanderwollViewers = window.wanderwollViewers || {};
+      window.wanderwollViewers[viewerId] = viewer;
+    }
+    
+    function addColorVariantControls(viewerId, viewer, modelConfig) {
+      const viewerEl = document.getElementById(viewerId);
+      if (!viewerEl) return;
+      
+      // Create color variant controls
+      const controlsContainer = document.createElement('div');
+      controlsContainer.className = 'ww-color-variants';
+      controlsContainer.style.cssText = `
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        z-index: 10;
+      `;
+      
+      // Add color swatches
+      Object.entries(modelConfig.variants).forEach(([variantKey, variantData]) => {
+        const swatch = document.createElement('button');
+        swatch.className = 'ww-color-swatch';
+        swatch.setAttribute('data-variant', variantKey);
+        swatch.setAttribute('aria-label', `Farbe: ${variantKey}`);
+        swatch.style.cssText = `
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background-color: ${variantData.color};
+          margin: 0 5px;
+          cursor: pointer;
+          border: 2px solid ${variantKey === 'default' ? '#2E8B57' : 'transparent'};
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        `;
+        
+        swatch.addEventListener('click', function() {
+          // Update active swatch
+          document.querySelectorAll('.ww-color-swatch').forEach(el => {
+            el.style.border = '2px solid transparent';
+          });
+          this.style.border = '2px solid #2E8B57';
+          
+          // Update model color
+          viewer.setModelColor(variantData.color);
+        });
+        
+        controlsContainer.appendChild(swatch);
+      });
+      
+      viewerEl.appendChild(controlsContainer);
+    }
+  });
+</script>
+{% endif %}

@@ -1,0 +1,28 @@
+{% comment %}
+  WanderWoll essentials AR Viewer Snippet
+  
+  This snippet adds the AR viewer to product pages.
+  Include this in your product template.
+{% endcomment %}
+
+<div id="wanderwoll-ar-viewer-container" class="wanderwoll-ar-viewer-container">
+  {% if product.metafields.wanderwoll.ar_enabled %}
+    <div id="wanderwoll-ar-viewer" class="wanderwoll-ar-viewer"></div>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize AR integration when scripts are loaded
+        if (typeof ARShopifyIntegration !== 'undefined') {
+          new ARShopifyIntegration({
+            apiKey: '{{ shop.metafields.wanderwoll.ar_api_key }}',
+            scriptUrl: '{{ 'virtualthreads-ar.js' | asset_url }}',
+            arModuleUrl: '{{ 'ar_integration_module.js' | asset_url }}',
+            arViewerComponentUrl: '{{ 'ar_viewer_component.js' | asset_url }}'
+          });
+        } else {
+          console.error('ARShopifyIntegration not loaded');
+        }
+      });
+    </script>
+  {% endif %}
+</div>

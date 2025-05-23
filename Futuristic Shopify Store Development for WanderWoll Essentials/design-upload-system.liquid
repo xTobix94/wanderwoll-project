@@ -1,0 +1,365 @@
+{% comment %}
+  WanderWoll essentials - Design Upload System Integration
+  
+  This snippet integrates the design upload system into the Shopify product page.
+  It provides a complete workflow for uploading, editing, and previewing custom designs.
+{% endcomment %}
+
+<div class="wanderwoll-design-upload-system" data-product-type="{{ product.type | handleize }}" data-color-variant="{{ current_variant.option1 | handleize }}">
+  <div class="design-upload-container-wrapper">
+    <h2 class="design-upload-title">{{ 'products.product.custom_design' | t }}</h2>
+    <p class="design-upload-description">{{ 'products.product.custom_design_description' | t }}</p>
+    
+    <div class="design-upload-tabs">
+      <button class="design-tab-button active" data-tab="upload">{{ 'products.product.upload' | t }}</button>
+      <button class="design-tab-button" data-tab="edit">{{ 'products.product.edit' | t }}</button>
+      <button class="design-tab-button" data-tab="preview">{{ 'products.product.preview' | t }}</button>
+    </div>
+    
+    <div class="design-upload-content">
+      <div id="design-upload-container" class="design-tab-content active"></div>
+      <div id="design-editor-container" class="design-tab-content"></div>
+      <div id="design-preview-container" class="design-tab-content"></div>
+    </div>
+    
+    <div class="design-upload-navigation">
+      <button class="design-nav-button back-button" style="display: none;">{{ 'products.product.back' | t }}</button>
+      <button class="design-nav-button next-button">{{ 'products.product.next' | t }}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize design upload system when scripts are loaded
+    if (typeof DesignUploadSystem !== 'undefined') {
+      initializeDesignUploadSystem();
+    } else {
+      // Load required scripts
+      loadDesignUploadScripts(function() {
+        initializeDesignUploadSystem();
+      });
+    }
+    
+    // Set up tab navigation
+    setupTabNavigation();
+  });
+  
+  function loadDesignUploadScripts(callback) {
+    // Load design upload system scripts
+    const scripts = [
+      '{{ "design_upload_component.js" | asset_url }}',
+      '{{ "design_editor_component.js" | asset_url }}',
+      '{{ "design_3d_integration.js" | asset_url }}',
+      '{{ "design_upload_system.js" | asset_url }}'
+    ];
+    
+    let loaded = 0;
+    
+    scripts.forEach(function(src) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      
+      script.onload = function() {
+        loaded++;
+        if (loaded === scripts.length) {
+          callback();
+        }
+      };
+      
+      document.head.appendChild(script);
+    });
+  }
+  
+  function initializeDesignUploadSystem() {
+    const container = document.querySelector('.wanderwoll-design-upload-system');
+    const productType = container.dataset.productType || 'tshirt';
+    const colorVariant = container.dataset.colorVariant || 'forest-green';
+    
+    // Initialize design upload system
+    window.designUploadSystem = new DesignUploadSystem({
+      uploadContainerId: 'design-upload-container',
+      editorContainerId: 'design-editor-container',
+      previewContainerId: 'design-preview-container',
+      productType: productType,
+      colorVariant: colorVariant,
+      language: '{{ shop.locale }}',
+      onDesignComplete: function(design) {
+        // Add design to cart as line item property
+        addDesignToCart(design);
+      },
+      onError: function(error) {
+        console.error('Design upload error:', error);
+        showErrorMessage(error);
+      }
+    });
+    
+    // Update design system when variant changes
+    document.addEventListener('variant:change', function(event) {
+      const variant = event.detail.variant;
+      if (variant && variant.option1) {
+        const colorVariant = variant.option1.toLowerCase().replace(/\s+/g, '-');
+        window.designUploadSystem.setColorVariant(colorVariant);
+      }
+    });
+  }
+  
+  function setupTabNavigation() {
+    const container = document.querySelector('.wanderwoll-design-upload-system');
+    const tabButtons = container.querySelectorAll('.design-tab-button');
+    const tabContents = container.querySelectorAll('.design-tab-content');
+    const backButton = container.querySelector('.back-button');
+    const nextButton = container.querySelector('.next-button');
+    
+    let currentTabIndex = 0;
+    const tabs = ['upload', 'edit', 'preview'];
+    
+    // Tab button click
+    tabButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        const tabName = button.dataset.tab;
+        switchToTab(tabName);
+      });
+    });
+    
+    // Back button click
+    backButton.addEventListener('click', function() {
+      if (currentTabIndex > 0) {
+        switchToTab(tabs[currentTabIndex - 1]);
+      }
+    });
+    
+    // Next button click
+    nextButton.addEventListener('click', function() {
+      if (currentTabIndex < tabs.length - 1) {
+        // Use the design upload system's navigation methods
+        if (window.designUploadSystem) {
+          if (currentTabIndex === 0) {
+            window.designUploadSystem.goToEdit();
+          } else if (currentTabIndex === 1) {
+            window.designUploadSystem.goToPreview();
+          }
+        }
+        
+        switchToTab(tabs[currentTabIndex + 1]);
+      } else {
+        // On the last tab, add to cart
+        addCustomDesignToCart();
+      }
+    });
+    
+    function switchToTab(tabName) {
+      // Update tab buttons
+      tabButtons.forEach(function(btn) {
+        if (btn.dataset.tab === tabName) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      // Update tab contents
+      tabContents.forEach(function(content) {
+        if (content.id === `design-${tabName}-container`) {
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+      
+      // Update current tab index
+      currentTabIndex = tabs.indexOf(tabName);
+      
+      // Update navigation buttons
+      updateNavigationButtons();
+    }
+    
+    function updateNavigationButtons() {
+      // Show/hide back button
+      if (currentTabIndex > 0) {
+        backButton.style.display = 'block';
+      } else {
+        backButton.style.display = 'none';
+      }
+      
+      // Update next button text
+      if (currentTabIndex === tabs.length - 1) {
+        nextButton.textContent = '{{ "products.product.add_to_cart" | t }}';
+      } else {
+        nextButton.textContent = '{{ "products.product.next" | t }}';
+      }
+      
+      // Disable next button on first tab if no design uploaded
+      if (currentTabIndex === 0 && window.designUploadSystem) {
+        const design = window.designUploadSystem.getCurrentDesign();
+        nextButton.disabled = !design;
+      } else {
+        nextButton.disabled = false;
+      }
+    }
+  }
+  
+  function addCustomDesignToCart() {
+    if (!window.designUploadSystem) return;
+    
+    const design = window.designUploadSystem.getFinalDesign();
+    if (!design) {
+      showErrorMessage('{{ "products.product.no_design_error" | t }}');
+      return;
+    }
+    
+    // Get current product form
+    const form = document.querySelector('form[action="/cart/add"]');
+    if (!form) return;
+    
+    // Create design data input
+    const designInput = document.createElement('input');
+    designInput.type = 'hidden';
+    designInput.name = 'properties[_custom_design]';
+    designInput.value = JSON.stringify({
+      id: design.timestamp,
+      dataUrl: design.dataUrl,
+      transform: design.transform,
+      colorAdjustments: design.colorAdjustments
+    });
+    
+    // Add input to form
+    form.appendChild(designInput);
+    
+    // Submit form
+    const submitButton = form.querySelector('[type="submit"]');
+    if (submitButton) {
+      submitButton.click();
+    } else {
+      form.submit();
+    }
+  }
+  
+  function showErrorMessage(message) {
+    // Create or update error message element
+    let errorElement = document.querySelector('.design-upload-error');
+    
+    if (!errorElement) {
+      errorElement = document.createElement('div');
+      errorElement.className = 'design-upload-error';
+      errorElement.style.color = '#e74c3c';
+      errorElement.style.padding = '10px';
+      errorElement.style.marginTop = '10px';
+      errorElement.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+      errorElement.style.borderRadius = '4px';
+      
+      const container = document.querySelector('.design-upload-container-wrapper');
+      container.appendChild(errorElement);
+    }
+    
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    
+    // Hide after 5 seconds
+    setTimeout(function() {
+      errorElement.style.display = 'none';
+    }, 5000);
+  }
+</script>
+
+<style>
+  .wanderwoll-design-upload-system {
+    margin: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  .design-upload-container-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .design-upload-title {
+    font-size: 24px;
+    color: #2E8B57;
+    margin-bottom: 10px;
+  }
+  
+  .design-upload-description {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .design-upload-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+  }
+  
+  .design-tab-button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .design-tab-button.active {
+    color: #2E8B57;
+    border-bottom-color: #2E8B57;
+  }
+  
+  .design-tab-content {
+    display: none;
+  }
+  
+  .design-tab-content.active {
+    display: block;
+  }
+  
+  .design-upload-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .design-nav-button {
+    padding: 10px 20px;
+    background-color: #2E8B57;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .design-nav-button:hover {
+    background-color: #236b43;
+  }
+  
+  .design-nav-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .back-button {
+    background-color: #f5f5f5;
+    color: #666;
+  }
+  
+  .back-button:hover {
+    background-color: #e5e5e5;
+  }
+  
+  @media (max-width: 768px) {
+    .design-upload-tabs {
+      flex-wrap: wrap;
+    }
+    
+    .design-tab-button {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+</style>

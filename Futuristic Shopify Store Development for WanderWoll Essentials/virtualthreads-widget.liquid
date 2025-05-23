@@ -1,0 +1,265 @@
+{% comment %}
+  WanderWoll essentials - VirtualThreads.io Integration Snippet
+  
+  This snippet embeds the VirtualThreads.io 3D mockup widget into product pages.
+  It should be included on product pages where 3D mockups are enabled.
+{% endcomment %}
+
+{% if product.metafields.wanderwoll.enable_3d_mockup %}
+  <div class="product-mockup-container">
+    <!-- VirtualThreads.io Widget Container -->
+    <div id="vt-mockup-widget" 
+         data-api-key="{{ shop.metafields.wanderwoll.vt_public_key }}"
+         data-product-id="{{ product.id }}"
+         data-template-id="{{ product.metafields.wanderwoll.vt_template_id }}"
+         data-color-primary="#2E8B57"
+         data-color-secondary="#F5DEB3"
+         data-color-accent="#000000">
+      
+      <!-- Loading Indicator -->
+      <div class="vt-loading-indicator">
+        <div class="vt-spinner"></div>
+        <p>3D-Viewer wird geladen...</p>
+      </div>
+      
+      <!-- Widget Controls (initially hidden, shown when widget is ready) -->
+      <div class="vt-widget-controls" style="display: none;">
+        <div class="vt-upload-button">
+          <label for="vt-design-upload">Eigenes Design hochladen</label>
+          <input type="file" id="vt-design-upload" accept="image/png,image/jpeg" style="display: none;">
+        </div>
+        
+        <div class="vt-view-controls">
+          <button class="vt-rotate-left">Drehen ←</button>
+          <button class="vt-rotate-right">Drehen →</button>
+          <button class="vt-zoom-in">Zoom +</button>
+          <button class="vt-zoom-out">Zoom -</button>
+          <button class="vt-reset-view">Ansicht zurücksetzen</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Fallback Container (hidden by default, shown if widget fails) -->
+    <div id="mockup-fallback" style="display: none;">
+      <img src="{{ product.metafields.wanderwoll.fallback_mockup | img_url: 'large' }}" alt="{{ product.title }} mockup">
+      <p class="fallback-message">3D-Vorschau ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.</p>
+    </div>
+    
+    <!-- Product Customization Instructions -->
+    <div class="product-customization-instructions">
+      <h3>Personalisieren Sie Ihr {{ product.title }}</h3>
+      <ol>
+        <li>Wählen Sie Ihre gewünschte Farbe und Größe</li>
+        <li>Laden Sie Ihr eigenes Design hoch (optional)</li>
+        <li>Drehen und zoomen Sie das 3D-Modell, um alle Details zu sehen</li>
+        <li>Fügen Sie das Produkt Ihrem Warenkorb hinzu</li>
+      </ol>
+      <p class="customization-note">Hinweis: Für beste Ergebnisse verwenden Sie Bilder mit transparentem Hintergrund (PNG-Format).</p>
+    </div>
+  </div>
+  
+  <!-- Include VirtualThreads.io Integration Script -->
+  {{ 'widget_integration.js' | asset_url | script_tag }}
+  
+  <style>
+    /* VirtualThreads.io Widget Styling */
+    .product-mockup-container {
+      margin-bottom: 2rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    #vt-mockup-widget {
+      width: 100%;
+      height: 500px;
+      background-color: #f9f7f2;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    @media (max-width: 768px) {
+      #vt-mockup-widget {
+        height: 350px;
+      }
+    }
+    
+    /* Loading Indicator */
+    .vt-loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    
+    .vt-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(46, 139, 87, 0.3);
+      border-radius: 50%;
+      border-top-color: #2E8B57;
+      animation: vt-spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes vt-spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Widget Controls */
+    .vt-widget-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+    
+    .vt-upload-button label {
+      display: inline-block;
+      background-color: #2E8B57;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    
+    .vt-upload-button label:hover {
+      background-color: #236b43;
+    }
+    
+    .vt-view-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .vt-view-controls button {
+      background-color: #F5DEB3;
+      border: 1px solid #2E8B57;
+      color: #000;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    
+    .vt-view-controls button:hover {
+      background-color: #2E8B57;
+      color: white;
+    }
+    
+    /* Fallback Container */
+    #mockup-fallback {
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    #mockup-fallback img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    
+    .fallback-message {
+      margin-top: 1rem;
+      color: #666;
+    }
+    
+    /* Product Customization Instructions */
+    .product-customization-instructions {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: #f9f7f2;
+      border-radius: 8px;
+      border-left: 4px solid #2E8B57;
+    }
+    
+    .product-customization-instructions h3 {
+      margin-top: 0;
+      color: #2E8B57;
+    }
+    
+    .product-customization-instructions ol {
+      padding-left: 1.5rem;
+    }
+    
+    .product-customization-instructions li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .customization-note {
+      font-style: italic;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    
+    /* Success and Error Messages */
+    .vt-success-message,
+    .vt-error-message,
+    .vt-processing-message {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: 4px;
+      z-index: 20;
+      animation: vt-fade-in 0.3s;
+    }
+    
+    .vt-success-message {
+      background-color: #dff2e6;
+      color: #2E8B57;
+      border: 1px solid #2E8B57;
+    }
+    
+    .vt-error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .vt-processing-message {
+      background-color: #e2f0fb;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    @keyframes vt-fade-in {
+      from { opacity: 0; transform: translate(-50%, -10px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    
+    /* Custom Mockup Preview */
+    .custom-mockup-preview {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: #f9f7f2;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .custom-mockup-preview h3 {
+      color: #2E8B57;
+      margin-top: 0;
+    }
+    
+    .custom-mockup-preview img {
+      max-width: 100%;
+      height: auto;
+      margin: 1rem 0;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+{% endif %}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
+  <g transform="translate(50,50)">
+    <!-- Mountain Silhouette -->
+    <path d="M0,50 Q30,20 60,50 Q90,10 120,50" stroke="#000" stroke-width="3" fill="none"/>
+    
+    <!-- Sound Wave Pattern -->
+    <line x1="0" y1="60" x2="20" y2="60" stroke="#000" stroke-width="3"/>
+    <line x1="25" y1="50" x2="25" y2="70" stroke="#000" stroke-width="2"/>
+    <line x1="35" y1="45" x2="35" y2="75" stroke="#000" stroke-width="2"/>
+    <line x1="45" y1="40" x2="45" y2="80" stroke="#000" stroke-width="2"/>
+    <line x1="55" y1="45" x2="55" y2="75" stroke="#000" stroke-width="2"/>
+    <line x1="65" y1="50" x2="65" y2="70" stroke="#000" stroke-width="2"/>
+    <line x1="75" y1="45" x2="75" y2="75" stroke="#000" stroke-width="2"/>
+    <line x1="85" y1="40" x2="85" y2="80" stroke="#000" stroke-width="2"/>
+    <line x1="95" y1="50" x2="95" y2="70" stroke="#000" stroke-width="2"/>
+    <line x1="105" y1="55" x2="105" y2="65" stroke="#000" stroke-width="2"/>
+    <line x1="115" y1="58" x2="115" y2="62" stroke="#000" stroke-width="2"/>
+    
+    <!-- Wool Symbol -->
+    <circle cx="140" cy="50" r="15" stroke="#000" stroke-width="2" fill="none"/>
+    <path d="M130,50 Q140,40 150,50" stroke="#000" stroke-width="2" fill="none"/>
+    <path d="M130,55 Q140,45 150,55" stroke="#000" stroke-width="2" fill="none"/>
+    <path d="M155,50 Q165,60 175,50" stroke="#000" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="150" y="130" font-family="Arial, sans-serif" font-weight="bold" font-size="24" text-anchor="middle">WANDERWOLL</text>
+  <text x="150" y="160" font-family="Arial, sans-serif" font-size="18" text-anchor="middle">essentials</text>
+</svg>
